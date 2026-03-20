@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <PackageId>GovUK.Dfe.HelloWorld.Package</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>RSD</Authors>
+    <Company>Department For Education</Company>
+    <Description>Test package for Azure Key Vault signing</Description>
+    <PackageTags>test;helloworld</PackageTags>
+    <RepositoryUrl>https://github.com/DFE-Digital/rsd-nuget-hello-world</RepositoryUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+  </PropertyGroup>
+
+</Project>

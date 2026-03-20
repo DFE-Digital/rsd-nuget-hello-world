@@ -1,2 +1,2 @@
 # rsd-nuget-hello-world
-RSD - NuGet Hello World (For testing the Code Signing workflow)
+GovUK.Dfe.HelloWorld.Package test NuGet package for the code-signing workflow.
