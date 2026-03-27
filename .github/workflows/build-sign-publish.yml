@@ -1,0 +1,70 @@
+name: Build, Sign and Publish NuGet package
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - run: dotnet restore
+      - run: dotnet build --configuration Release --no-restore
+      - run: dotnet pack --configuration Release --no-build --output ./artifacts
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nuget-package
+          path: ./artifacts/*.nupkg
+
+  sign:
+    needs: build
+    uses: DFE-Digital/rsd-nuget-sign/.github/workflows/sign.yml@v1.2.0
+    with:
+      artifact-name: nuget-package
+      artifact-path: ./artifacts
+      publisher-name: Department For Education
+      description: GovUK.Dfe.HelloWorld.Package for testing Code Signing
+      description-url: https://github.com/DFE-Digital/rsd-nuget-hello-world
+      azure-key-vault-url: ${{ secrets.SIGNING_AZURE_KEY_VAULT_URL }}
+      azure-key-vault-certificate: ${{ secrets.SIGNING_AZURE_KEY_VAULT_CERTIFICATE_NAME }}
+    secrets:
+      azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
+      azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+      azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+  publish:
+    needs: sign
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate NuGet API key
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: |
+          if [ -z "$NUGET_API_KEY" ]; then
+            echo "The NUGET_API_KEY secret is required to publish this package."
+            exit 1
+          fi
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: nuget-package-signed
+          path: ./artifacts
+
+      - name: Push package to NuGet
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: dotnet nuget push "./artifacts/*.nupkg" \
+               --api-key "$NUGET_API_KEY" \
+               --source https://api.nuget.org/v3/index.json \
+               --skip-duplicate
