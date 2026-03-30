@@ -30,20 +30,22 @@ jobs:
 
   sign:
     needs: build
-    uses: DFE-Digital/rsd-nuget-sign/.github/workflows/sign.yml@v1.3.1
     environment: ${{ inputs.environment || 'development' }}
-    with:
-      artifact-name: nuget-package
-      artifact-path: ./artifacts
-      publisher-name: Department For Education
-      description: GovUK.Dfe.HelloWorld.Package for testing Code Signing
-      description-url: https://github.com/DFE-Digital/rsd-nuget-hello-world
-    secrets:
-      azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
-      azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-      azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      azure-key-vault-url: ${{ secrets.SIGNING_AZURE_KEY_VAULT_URL }}
-      azure-key-vault-certificate: ${{ secrets.SIGNING_AZURE_KEY_VAULT_CERTIFICATE_NAME }}
+    steps:
+      - name: Sign
+        uses: DFE-Digital/rsd-nuget-sign/.github/workflows/sign.yml@v1.3.1
+        with:
+          artifact-name: nuget-package
+          artifact-path: ./artifacts
+          publisher-name: Department For Education
+          description: GovUK.Dfe.HelloWorld.Package for testing Code Signing
+          description-url: https://github.com/DFE-Digital/rsd-nuget-hello-world
+        secrets:
+          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          azure-key-vault-url: ${{ secrets.SIGNING_AZURE_KEY_VAULT_URL }}
+          azure-key-vault-certificate: ${{ secrets.SIGNING_AZURE_KEY_VAULT_CERTIFICATE_NAME }}
 
   publish:
     needs: sign
