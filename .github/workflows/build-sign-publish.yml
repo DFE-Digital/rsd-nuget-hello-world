@@ -2,6 +2,11 @@ name: Build, Sign and Publish NuGet package
 
 on:
   workflow_dispatch:
+    inputs:
+      environment:
+        required: false
+        default: development
+        type: string
 
 jobs:
   build:
@@ -26,6 +31,7 @@ jobs:
   sign:
     needs: build
     uses: DFE-Digital/rsd-nuget-sign/.github/workflows/sign.yml@v1.3.1
+    environment: ${{ inputs.environment || 'development' }}
     with:
       artifact-name: nuget-package
       artifact-path: ./artifacts
@@ -42,6 +48,7 @@ jobs:
   publish:
     needs: sign
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment || 'development' }}
     steps:
       - name: Validate NuGet API key
         env:
