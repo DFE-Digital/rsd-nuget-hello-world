@@ -34,7 +34,7 @@ jobs:
     with:
       environment: ${{ inputs.environment || 'development' }}
       artifact-name: nuget-package
-      artifact-path: ./artifacts
+      artifact-path: ${{ github.workspace }}/artifacts
       publisher-name: Department For Education
       description: GovUK.Dfe.HelloWorld.Package for testing Code Signing
       description-url: https://github.com/DFE-Digital/rsd-nuget-hello-world
